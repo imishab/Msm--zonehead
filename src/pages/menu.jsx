@@ -1,6 +1,4 @@
 import React from "react";
-import CategorySlider from "../components/products/CategorySlider";
-import ProductCardSection from "../components/products/ProductCardSection";
 
 export default function Menu() {
   return (
