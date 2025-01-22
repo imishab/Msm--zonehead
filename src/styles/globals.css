@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.truncated-title {
+  white-space: nowrap; /* Prevents wrapping to multiple lines */
+  overflow: hidden; /* Hides the overflow text */
+  text-overflow: ellipsis; /* Adds the ellipsis */
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  border: 2px solid rgb(134, 134, 134); /* Light grey */
+  border-top: 2px solid #fff; /* White */
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+eipt-header {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+.receipt .row {
+  margin-bottom: 15px;
+}
+.receipt .amount {
+  text-align: right;
+  background: #ccc;
+  padding: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
