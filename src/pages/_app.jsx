@@ -1,12 +1,10 @@
 import { useRouter } from "next/router";
-import "@/styles/globals.css";
+import "../styles/globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
-import Footerbar from "@/components/layout/Footerbar";
-import Navbar from "@/components/layout/Navbar";
-import { useDispatch } from "react-redux";
-import { loadZoneDetails } from "../redux/slices/pageSlice"; // Adjust path as needed
+import Footerbar from "../components/layout/Footerbar";
+import Navbar from "../components/layout/Navbar";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import Toastify styles

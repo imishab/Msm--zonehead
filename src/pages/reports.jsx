@@ -1,26 +1,149 @@
 import Link from "next/link";
-import React, { useState, useRef } from "react";
-import { useSelector } from "react-redux";
-import { ArrowLeft, ArrowDownToLine, Share, Trash2, Eye } from "lucide-react";
-import { useGetAllReceiptsQuery } from "../redux/api/ZoneApi";
+import React, { useState, useEffect } from "react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import { ArrowLeft, Download, Trash2, Eye, Share2 } from "lucide-react";
+import {
+  useGetAllReceiptsQuery,
+  useDeleteReceiptMutation,
+} from "../redux/api/ZoneApi";
 import { Modal, Button } from "react-bootstrap";
-import { formatDate } from "../utils/formateDate"; // Adjust the path as needed
+import { formatDate } from "../utils/formateDate";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
-export default function index() {
-  const { data: receipts, isLoading } = useGetAllReceiptsQuery("");
+export default function Reports() {
+  const {
+    data: receipts,
+    isLoading,
+    isSuccess,
+    refetch,
+  } = useGetAllReceiptsQuery("");
+
+  const [deleteReceipt, { isLoading: isDeleting }] = useDeleteReceiptMutation();
+  // Handle receipt deletion
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You will not be able to recover this receipt!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true,
+      customClass: {
+        confirmButton: "btn btn-danger",
+        cancelButton: "btn btn-secondary",
+      },
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteReceipt(id).unwrap();
+        toast.success("Receipt deleted successfully!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: true,
+        });
+        refetch();
+      } catch {
+        toast.error("Failed to delete receipt. Please try again.", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+        });
+      }
+    }
+  };
+
   const [showModal, setShowModal] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
-
   const handleOpenModal = (receipt) => {
     setSelectedReceipt(receipt);
     setShowModal(true);
   };
-
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedReceipt(null);
   };
 
+  const handleDownloadPDF = async (receipt) => {
+    const doc = new jsPDF("p", "mm", "a4"); // Use A4 page size (standard size for PDF)
+    const receiptElement = document.createElement("div");
+
+    receiptElement.innerHTML = `
+    <div style="padding: 20px; max-width: 1000px; margin: auto; border: 1px solid #000; border-radius: 10px; background-color: #fff;">
+      <h2 style="text-align: center; color: #333;"> MSM NORTH KOZHIKODE</h2>
+      <hr />
+      <p style="margin-bottom:0px;"><strong>Date:</strong> ${new Date(
+        receipt.createdAt
+      ).toLocaleDateString()}</p>
+      <p style="margin-bottom:0px;"><strong>To:</strong> ${receipt.name}</p>
+      <p><strong>Number:</strong> ${receipt.phone}</p>
+      
+      <div style="text-align: center;">
+        <i class="fab fa-mdb" style="font-size: 50px; color: #5d9fc5;"></i>
+      </div>
+
+      <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+        <thead style="background-color: #84B0CA; color: white;">
+          <tr>
+            <th style="padding: 5px; text-align: left;">Amount</th>
+            <th style="padding: 5px; text-align: left;">Payment</th>
+            <th style="padding: 5px; text-align: left;">Payment Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 5px;">₹${receipt.amount}</td>
+            <td style="padding: 5px;">${receipt.payment}</td>
+            <td style="padding: 5px;">${receipt.paymenttype}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    `;
+
+    document.body.appendChild(receiptElement);
+
+    const canvas = await html2canvas(receiptElement);
+    const imgData = canvas.toDataURL("image/png");
+
+    doc.addImage(imgData, "PNG", 10, 10, 180, 80);
+    doc.save(`${receipt.name}_receipt.pdf`);
+
+    document.body.removeChild(receiptElement);
+
+    // Refetch receipts after PDF download
+    refetch(); // This will trigger a refetch of the data
+  };
+
+  // Share function to generate WhatsApp link and send message to the phone number
+  const handleShareToWhatsApp = (receipt) => {
+    const message = `Receipt Details:
+Date: ${new Date(receipt.createdAt).toLocaleDateString()}
+To: ${receipt.name}
+Number: ${receipt.phone}
+Amount: ₹${receipt.amount}
+Payment: ${receipt.payment}
+Payment Type: ${receipt.paymenttype}`;
+
+    // Ensure the phone number is in the correct format (no spaces, dashes, or other symbols)
+    const phoneNumber = receipt.phone.replace(/\D/g, ""); // Remove non-numeric characters
+
+    // Create the WhatsApp link with the phone number and encoded message
+    const encodedMessage = encodeURIComponent(message); // Encode the message for URL
+    const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+    // Open WhatsApp link to send the message
+    window.open(whatsappLink, "_blank");
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      refetch();
+    }
+  }, [isSuccess, refetch]);
   return (
     <>
       <div className="pt-3" />
@@ -31,6 +154,7 @@ export default function index() {
           </Link>
           <h5 className="mb-3">All Receipts</h5>
         </div>
+
         <div className="card">
           <div className="card-body">
             <div className="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
@@ -49,6 +173,7 @@ export default function index() {
                     <thead>
                       <tr>
                         <th>No</th>
+                        <th>Date</th>
                         <th>User Details</th>
                         <th>Amount</th>
                         <th>Payment</th>
@@ -74,6 +199,9 @@ export default function index() {
                           <tr key={receipt._id}>
                             <td>{index + 1}</td>
                             <td>
+                              {new Date(receipt.createdAt).toLocaleDateString()}
+                            </td>
+                            <td>
                               <p>
                                 <strong>Name :</strong> {receipt.name || "N/A"}{" "}
                                 <br />
@@ -94,6 +222,20 @@ export default function index() {
                             <td>{receipt.paymenttype}</td>
                             <td>
                               <div className="d-flex">
+                                <Download
+                                  size={16}
+                                  color="blue"
+                                  onClick={() => handleDownloadPDF(receipt)}
+                                  style={{ cursor: "pointer" }}
+                                  className="me-3"
+                                />
+                                <Share2
+                                  size={16}
+                                  color="blue"
+                                  onClick={() => handleShareToWhatsApp(receipt)}
+                                  style={{ cursor: "pointer" }}
+                                  className="me-3"
+                                />
                                 <Eye
                                   size={16}
                                   onClick={() => handleOpenModal(receipt)}
@@ -103,7 +245,8 @@ export default function index() {
                                 <Trash2
                                   size={16}
                                   color="red"
-                                  onClick={() => handleOpenModal(receipt)}
+                                  onClick={() => handleDelete(receipt._id)}
+                                  disabled={isDeleting}
                                   style={{ cursor: "pointer" }}
                                   className="me-3"
                                 />
@@ -138,21 +281,6 @@ export default function index() {
         </Modal.Header>
         <Modal.Body>
           {selectedReceipt && (
-            // <div className="card p-3 receipt-card">
-            //   <h5 className="text-center">MSM KOZHIKODE NORTH</h5>
-            //   <p className="mt-4">
-            //     <strong>Name:</strong> {selectedReceipt.name}
-            //   </p>
-            //   <p className="mt-4">
-            //     <strong>Date:</strong> {formatDate(selectedReceipt.createdAt)}
-            //   </p>
-            //   <p>
-            //     <strong>Phone:</strong> {selectedReceipt.phone}
-            //   </p>
-            //   <button className="text-right btn btn-dark ">
-            //     <strong>Amount:</strong> ₹{selectedReceipt.amount}
-            //   </button>
-            // </div>
             <section className="">
               <div className="h-full">
                 {/* Card */}

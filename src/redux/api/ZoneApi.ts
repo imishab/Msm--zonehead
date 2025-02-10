@@ -4,6 +4,7 @@ export const ZoneApi = createApi({
   reducerPath: "UserApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://msm-backend-no1z.onrender.com/api/zone",
+    // baseUrl:"http://localhost:4000/api/zone",
     credentials: "include", // Ensures cookies are sent with the request
     prepareHeaders: (headers) => {
       // Retrieve zoneToken from localStorage
@@ -54,6 +55,13 @@ export const ZoneApi = createApi({
       providesTags: ["Receipts"],
     }),
 
+    deleteReceipt: builder.mutation({
+      query: (id) => ({
+        url: `/delete-receipt/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Receipts'],
+    }),
 
    
 
@@ -67,4 +75,5 @@ export const {
   useGetZoneProfileQuery,
   useGenerateReceiptMutation,
   useGetAllReceiptsQuery,
+  useDeleteReceiptMutation,
 } = ZoneApi;

@@ -1,0 +1,31 @@
+<div
+    style="padding: 20px; max-width: 900px; margin: auto; font-family: Arial, sans-serif; border: 2px solid #000; border-radius: 10px; background-color: #fff;">
+    <h2 style="text-align: center; color: #333;">🏦 MSM NORTH KOZHIKODE</h2>
+    <hr />
+    <p><strong>Date:</strong> ${new Date(
+        receipt.createdAt
+        ).toLocaleDateString()}</p>
+    <p><strong>To:</strong> ${receipt.name}</p>
+    <p><strong>Number:</strong> ${receipt.phone}</p>
+
+    <div style="text-align: center;">
+        <i class="fab fa-mdb" style="font-size: 50px; color: #5d9fc5;"></i>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+        <thead style="background-color: #84B0CA; color: white;">
+            <tr>
+                <th style="padding: 5px; text-align: left;">Amount</th>
+                <th style="padding: 5px; text-align: left;">Payment</th>
+                <th style="padding: 5px; text-align: left;">Payment Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 5px;">₹${receipt.amount}</td>
+                <td style="padding: 5px;">${receipt.payment}</td>
+                <td style="padding: 5px;">${receipt.paymenttype}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
