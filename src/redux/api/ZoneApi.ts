@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const ZoneApi = createApi({
   reducerPath: "UserApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://msm-backend-no1z.onrender.com/api/zone",
+    baseUrl: "https://backend.msmnorth.com/api/zone",
     // baseUrl:"http://localhost:4000/api/zone",
     credentials: "include", // Ensures cookies are sent with the request
     prepareHeaders: (headers) => {
