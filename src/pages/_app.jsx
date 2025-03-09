@@ -18,6 +18,7 @@ export default function App({ Component, pageProps }) {
     router.pathname === "/auth/signin" ||
     router.pathname === "/auth/zone-signin" ||
     router.pathname === "/auth/signup";
+  router.pathname.startsWith("/receipt/"); // Ensure /receipt/[id] is excluded from auth
 
   useEffect(() => {
     setIsMounted(true); // Ensures this logic runs only on the client
