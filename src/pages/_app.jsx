@@ -14,11 +14,14 @@ export default function App({ Component, pageProps }) {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
 
+  // Define pages that should NOT require authentication
   const isAuthPage =
     router.pathname === "/auth/signin" ||
     router.pathname === "/auth/zone-signin" ||
     router.pathname === "/auth/signup";
-  router.pathname.startsWith("/receipt/"); // Ensure /receipt/[id] is excluded from auth
+
+  // Check if the current page is a receipt page (including dynamic IDs)
+  const isReceiptPage = router.asPath.startsWith("/receipt/");
 
   useEffect(() => {
     setIsMounted(true); // Ensures this logic runs only on the client
@@ -28,19 +31,17 @@ export default function App({ Component, pageProps }) {
     return null;
   }
 
-  const WrappedComponent = isAuthPage ? Component : withAuth(Component);
+  // Apply authentication check only if it's NOT an auth page and NOT a receipt page
+  const WrappedComponent =
+    isAuthPage || isReceiptPage ? Component : withAuth(Component);
 
   return (
     <Provider store={store}>
       <ToastContainer />
       {!isAuthPage && <Navbar />}
-      {!isAuthPage ? (
-        <div className="page-content-wrapper">
-          <WrappedComponent {...pageProps} />
-        </div>
-      ) : (
+      <div className="page-content-wrapper">
         <WrappedComponent {...pageProps} />
-      )}
+      </div>
       {!isAuthPage && <Footerbar />}
     </Provider>
   );
