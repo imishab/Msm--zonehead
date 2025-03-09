@@ -1,5 +1,7 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { ArrowLeft, Download, Trash2, Eye, Share2 } from "lucide-react";
@@ -21,6 +23,8 @@ export default function Reports() {
   } = useGetAllReceiptsQuery("");
 
   const [deleteReceipt, { isLoading: isDeleting }] = useDeleteReceiptMutation();
+  const router = useRouter();
+
   // Handle receipt deletion
   const handleDelete = async (id) => {
     const result = await Swal.fire({
@@ -54,6 +58,10 @@ export default function Reports() {
         });
       }
     }
+  };
+
+  const handleOpenReceipt = (id) => {
+    router.push(`/receipt/${id}`);
   };
 
   const [showModal, setShowModal] = useState(false);
@@ -120,13 +128,7 @@ export default function Reports() {
 
   // Share function to generate WhatsApp link and send message to the phone number
   const handleShareToWhatsApp = (receipt) => {
-    const message = `Receipt Details:
-Date: ${new Date(receipt.createdAt).toLocaleDateString()}
-To: ${receipt.name}
-Number: ${receipt.phone}
-Amount: ₹${receipt.amount}
-Payment: ${receipt.payment}
-Payment Type: ${receipt.paymenttype}`;
+    const message = `Hi ${receipt.name}, \n Here is your recipt link : \n https://zonehead.vercel.app/receipt/${receipt._id}`;
 
     // Ensure the phone number is in the correct format (no spaces, dashes, or other symbols)
     const phoneNumber = receipt.phone.replace(/\D/g, ""); // Remove non-numeric characters
@@ -238,10 +240,11 @@ Payment Type: ${receipt.paymenttype}`;
                                 />
                                 <Eye
                                   size={16}
-                                  onClick={() => handleOpenModal(receipt)}
+                                  onClick={() => handleOpenReceipt(receipt._id)}
                                   style={{ cursor: "pointer" }}
                                   className="me-3"
                                 />
+
                                 <Trash2
                                   size={16}
                                   color="red"

@@ -63,6 +63,9 @@ export const ZoneApi = createApi({
       invalidatesTags: ['Receipts'],
     }),
 
+    getReceiptById: builder.query({
+      query: (id) => `/receipt/${id}`, // API call to get receipt by ID
+    }),
    
 
   
@@ -76,4 +79,5 @@ export const {
   useGenerateReceiptMutation,
   useGetAllReceiptsQuery,
   useDeleteReceiptMutation,
+  useGetReceiptByIdQuery,
 } = ZoneApi;
