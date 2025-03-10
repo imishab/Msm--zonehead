@@ -23,9 +23,9 @@ export default function ViewReceipt() {
   if (!receipt) return <p className="text-center">Receipt not found.</p>;
 
   return (
-    <div className="pt-10 flex flex-col items-center justify-center bg-gray-100 p-6">
+    <div className="pt-10 flex flex-col items-center justify-center  p-6">
       {/* Back Button */}
-      <div className="mb-4  w-full max-w-2xl flex justify-between items-center">
+      {/* <div className="mb-4  w-full max-w-2xl flex justify-between items-center">
         <div className="flex items-center">
           <Link href="/reports">
             <ArrowLeft
@@ -36,34 +36,30 @@ export default function ViewReceipt() {
           </Link>
           <h2 className="text-lg mt-2 font-semibold">Receipt Details</h2>
         </div>
-        <a
-          href="#"
-          onClick={() => window.print()}
-          className="btn bg-black text-white rounded "
-        >
-          Download Receipt
-        </a>
-      </div>
+        
+      </div> */}
 
       {/* Receipt Card */}
       <div className="bg-white shadow-lg rounded-xl w-full max-w-2xl  border">
         {/* Header Section */}
-        <div className="flex justify-between bg-[#ffe29a5a] p-6 rounded-t-xl items-center  pb-3">
+        <div className=" bg-[#ffe29a5a] p-6 rounded-t-xl items-center  pb-3">
           <div>
-            <h1 className="text-xl font-bold text-gray-800">
-              Msm Kozhikode North
+            <h1 className="text-lg text-center mb-0 font-bold text-green-900">
+              Mujahid Students Movement (MSM)
             </h1>
-            <p className="text-gray-600">www.msmnorth.com</p>
-          </div>
-          <div className="text-right text-gray-600 text-sm">
-            <p>Receipt Id : #MSMRR0342</p>
-            <p>{new Date(receipt.createdAt).toLocaleDateString()}</p>
+            <p className="text-green-900 mt-0 mb-0 text-center">
+              Kozhikode North District Committee
+            </p>
+            <p className="text-black mt-0  text-center">
+              Salafi Complex Near Cvil Station Koyilandy-673305
+            </p>
+            {/* <p className="mt-4 mb-0">Receipt Id : #MS</p> */}
           </div>
         </div>
 
         {/* Receipt Details */}
         <div className=" bg-[#ffffff88] rounded-b-xl">
-          <div className="grid grid-cols-2 gap-1 p-6 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 p-6 text-sm mb-0">
             <div className="form-group mb-3">
               <label className="form-label" htmlFor="Username">
                 Name
@@ -87,7 +83,7 @@ export default function ViewReceipt() {
                 defaultValue={receipt.phone}
                 type="text"
                 placeholder="Full Name"
-                readOnly=""
+                readOnly
               />
             </div>
 
@@ -114,16 +110,28 @@ export default function ViewReceipt() {
                 defaultValue={receipt.payment}
                 type="text"
                 placeholder="Full Name"
-                readOnly=""
+                readOnly
               />
             </div>
-
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 justify-between items-center px-6 mt-0">
             <p>
               <strong>Payment Platform:</strong> {receipt.paymenttype}
+            </p>
+            <p>
+              <strong>Receipt Created Date:</strong>{" "}
+              {new Date(receipt.createdAt).toLocaleDateString()}
             </p>
           </div>
         </div>
       </div>
+      <a
+        href="#"
+        onClick={() => window.print()}
+        className="btn mt-4 bg-black text-white rounded "
+      >
+        Download Receipt
+      </a>
     </div>
   );
 }

@@ -128,7 +128,11 @@ export default function Reports() {
 
   // Share function to generate WhatsApp link and send message to the phone number
   const handleShareToWhatsApp = (receipt) => {
-    const message = `Hi ${receipt.name}, \n Here is your recipt link : \n https://zonehead.vercel.app/receipt/${receipt._id}`;
+    const message = `Hi ${receipt.name}, Assalamu alikkum, 
+جزاك اللهُ خير  
+We sincerely appreciate your generous donation to MSM.  
+Here is your receipt link:  
+https://zonehead.vercel.app/receipt/${receipt._id}`;
 
     // Ensure the phone number is in the correct format (no spaces, dashes, or other symbols)
     const phoneNumber = receipt.phone.replace(/\D/g, ""); // Remove non-numeric characters

@@ -21,7 +21,9 @@ export default function App({ Component, pageProps }) {
     router.pathname === "/auth/signup";
 
   // Check if the current page is a receipt page (including dynamic IDs)
-  const isReceiptPage = router.asPath.startsWith("/receipt/");
+  const isReceiptPage =
+    router.pathname.startsWith("/receipt/") ||
+    router.asPath.startsWith("/receipt/");
 
   useEffect(() => {
     setIsMounted(true); // Ensures this logic runs only on the client
@@ -38,11 +40,13 @@ export default function App({ Component, pageProps }) {
   return (
     <Provider store={store}>
       <ToastContainer />
-      {!isAuthPage && <Navbar />}
+      {!isAuthPage && !isReceiptPage && <Navbar />}{" "}
+      {/* Hide Navbar on /receipt/[id] */}
       <div className="page-content-wrapper">
         <WrappedComponent {...pageProps} />
       </div>
-      {!isAuthPage && <Footerbar />}
+      {!isAuthPage && !isReceiptPage && <Footerbar />}{" "}
+      {/* Hide Footerbar on /receipt/[id] */}
     </Provider>
   );
 }
